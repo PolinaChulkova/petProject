@@ -14,5 +14,4 @@ public class CommentController {
     private final CommentService commentService;
 
     public String createComment(@RequestBody Comment comment);
-
 }
