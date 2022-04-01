@@ -25,6 +25,14 @@ public class CommentService {
         }
     }
 
+    public Comment createComment(Comment comment) {
+        if (comment.getId()!=null && commentService.findCommentById(comment.getId()) != null) {
+            return null;
+        }
+        commentRepo.save(comment);
+        return comment;
+    }
+
     public Comment deleteById(long id){
         if (commentRepo.existsById(id)) {
             return commentRepo.deleteById(id);
