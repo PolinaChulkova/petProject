@@ -26,7 +26,7 @@ public class CommentService {
     }
 
     public Comment createComment(Comment comment) {
-        if (comment.getId()!=null && commentService.findCommentById(comment.getId()) != null) {
+        if (comment.getId()!=null && commentRepo.findCommentById(comment.getId()) != null) {
             return null;
         }
         commentRepo.save(comment);

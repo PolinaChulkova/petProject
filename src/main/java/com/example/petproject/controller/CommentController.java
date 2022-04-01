@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
     private final CommentService commentService;
 
-    public String createComment(@RequestBody Comment comment);
+    public String createComment(@RequestBody Comment comment) {
+        commentService.createComment(comment);
+        return "New comment created";
+    }
 
 }
