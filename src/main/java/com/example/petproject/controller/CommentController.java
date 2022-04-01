@@ -17,5 +17,5 @@ public class CommentController {
         commentService.createComment(comment);
         return "New comment created";
     }
-
+    
 }
