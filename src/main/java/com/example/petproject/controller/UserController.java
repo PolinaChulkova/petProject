@@ -12,11 +12,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
     private UserService userService;
     private RoleService roleService;
+
+    public UserController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+    }
 
     @GetMapping("/all")
     public List<User> getUsers() {
@@ -29,10 +33,9 @@ public class UserController {
         return user.toString();
     }
 
-    @PostMapping()
+    @PostMapping
     public String createUser(@RequestBody FormForUserAndRole form) throws ModelException {
         User user = userService.createNewUser(form.getUser(), form.getRoleName());
-        userService.saveUser(user);
         return "User created";
     }
 

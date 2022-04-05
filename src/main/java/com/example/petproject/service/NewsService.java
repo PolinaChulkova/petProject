@@ -36,8 +36,8 @@ public class NewsService {
 
 
     public News createNews(News news) {
-        if (news.getId() != null && newsRepo.findNewsById(news.getId()) != null) {
-            return null;
+        if (newsRepo.existsById(news.getId())) {
+            return null;//exception
         }
         newsRepo.save(news);
         return news;
@@ -52,7 +52,9 @@ public class NewsService {
         newsRepo.save(oldNews);
     }
 
-    public void deleteNews(long id) {
-        newsRepo.deleteById(id);
+    public News deleteNews(long id) {
+        if (newsRepo.existsById(id)) {
+            return newsRepo.deleteById(id);
+        } else return null;
     }
 }

@@ -2,21 +2,29 @@ package com.example.petproject.service;
 
 import com.example.petproject.model.Comment;
 import com.example.petproject.repository.CommentRepo;
-import lombok.RequiredArgsConstructor;
+import com.example.petproject.repository.NewsRepo;
+import com.example.petproject.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepo commentRepo;
+    private final UserRepo userRepo;
+    private final NewsRepo newsRepo;
 
-    public List<Comment> getComments() {
-        return commentRepo.findAll();
+    public CommentService(CommentRepo commentRepo, UserRepo userRepo, NewsRepo newsRepo) {
+        this.commentRepo = commentRepo;
+        this.userRepo = userRepo;
+        this.newsRepo = newsRepo;
     }
 
-    public Comment findCommentById(long id){
+    public List<Comment> getComments(Long newsId) {
+        return commentRepo.findAllByNews_Id(newsId);
+    }
+
+    public Comment findCommentById(Long id){
         if (commentRepo.existsById(id)) {
             Comment comment = commentRepo.findCommentById(id);
             return comment;
@@ -25,12 +33,19 @@ public class CommentService {
         }
     }
 
-    public Comment createComment(Comment comment) {
-        if (comment.getId()!=null && commentRepo.findCommentById(comment.getId()) != null) {
+    public Comment createComment(Long authorId, Long newsId, Comment comment) {
+        if (commentRepo.existsById(comment.getId())) {
             return null;
         }
+        comment.setAuthor(userRepo.findUserById(authorId));
+        comment.setNews(newsRepo.findNewsById(newsId));
         commentRepo.save(comment);
         return comment;
+    }
+
+    public void updateComment(Comment comment, Comment oldComment) {
+        oldComment.setText(comment.getText());
+        commentRepo.save(oldComment);
     }
 
     public Comment deleteById(long id){

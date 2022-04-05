@@ -7,21 +7,24 @@ import com.example.petproject.DTO.FormForUserAndRole;
 import com.example.petproject.model.User;
 import com.example.petproject.repository.RoleRepo;
 import com.example.petproject.repository.UserRepo;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
 //    private final BCryptPasswordEncoder encoder;
+
+
+    public UserService(UserRepo userRepo, RoleRepo roleRepo) {
+        this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -81,7 +84,9 @@ public class UserService implements UserDetailsService {
     }
 
     public User deleteUser(long id) {
-        return userRepo.deleteById(id);
+        if (userRepo.existsById(id)) {
+            return userRepo.deleteById(id);
+        } else return null;//exception
     }
 
 

@@ -3,6 +3,7 @@ package com.example.petproject.model.news;
 import com.example.petproject.model.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;

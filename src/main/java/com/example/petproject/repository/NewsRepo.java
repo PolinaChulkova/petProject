@@ -1,5 +1,6 @@
 package com.example.petproject.repository;
 
+import com.example.petproject.model.Comment;
 import com.example.petproject.model.news.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

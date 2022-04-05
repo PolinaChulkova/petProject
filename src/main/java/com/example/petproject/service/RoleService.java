@@ -4,7 +4,6 @@ import com.example.petproject.model.Role;
 import com.example.petproject.model.User;
 import com.example.petproject.repository.RoleRepo;
 import com.example.petproject.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +13,6 @@ public class RoleService{
     private final RoleRepo roleRepo;
     private final UserRepo userRepo;
 
-    @Autowired
     public RoleService(RoleRepo roleRepo, UserRepo userRepo) {
         this.roleRepo = roleRepo;
         this.userRepo = userRepo;
@@ -37,15 +35,17 @@ public class RoleService{
     }
 
     public Role createNewRole(Role role) {
-        if (role.getRoleName() != null && roleRepo.findRoleByRoleName(role.getRoleName()) != null) {
-            return null;
+        if (roleRepo.existsByRoleName(role.getRoleName())) {
+            return null;//exception
         }
         roleRepo.save(role);
         return role;
     }
 
     public Role deleteRoleByRoleName(String name) {
-        return roleRepo.deleteRoleByRoleName(name);
+        if (roleRepo.existsByRoleName(name)) {
+            return roleRepo.deleteRoleByRoleName(name);
+        } else return null;//exception
     }
 
     public void removeRolesFromUser(User user) {
