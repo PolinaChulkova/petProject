@@ -21,7 +21,7 @@ public class CommentService {
     }
 
     public List<Comment> getComments(Long newsId) {
-        return commentRepo.findAllByNews_Id(newsId);
+        return commentRepo.findAll();
     }
 
     public Comment findCommentById(Long id){
