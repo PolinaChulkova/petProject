@@ -36,8 +36,8 @@ public class NewsService {
 
 
     public News createNews(News news) {
-        if (newsRepo.existsById(news.getId())) {
-            return null;//exception
+        if (news.getId() != null && newsRepo.findNewsById(news.getId()) != null){
+            return null;
         }
         newsRepo.save(news);
         return news;

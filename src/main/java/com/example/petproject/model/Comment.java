@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +25,12 @@ public class Comment {
     private Date date;
     @Column(name = "text")
     private String text;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Comment> children;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

@@ -1,6 +1,7 @@
 package com.example.petproject.service;
 
 import com.example.petproject.model.Comment;
+import com.example.petproject.model.User;
 import com.example.petproject.repository.CommentRepo;
 import com.example.petproject.repository.NewsRepo;
 import com.example.petproject.repository.UserRepo;
@@ -25,16 +26,15 @@ public class CommentService {
     }
 
     public Comment findCommentById(Long id){
-        if (commentRepo.existsById(id)) {
-            Comment comment = commentRepo.findCommentById(id);
-            return comment;
-        } else {
-            return null;//ошибку
+        Comment comment = commentRepo.findCommentById(id);
+        if (comment == null) {
+            return null;
         }
+        return comment;
     }
 
     public Comment createComment(Long authorId, Long newsId, Comment comment) {
-        if (commentRepo.existsById(comment.getId())) {
+        if (comment.getId() != null && commentRepo.findCommentById(comment.getId()) != null){
             return null;
         }
         comment.setAuthor(userRepo.findUserById(authorId));
