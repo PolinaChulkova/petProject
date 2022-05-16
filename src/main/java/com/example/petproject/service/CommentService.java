@@ -1,28 +1,27 @@
 package com.example.petproject.service;
 
 import com.example.petproject.model.Comment;
-import com.example.petproject.model.User;
 import com.example.petproject.repository.CommentRepo;
 import com.example.petproject.repository.NewsRepo;
 import com.example.petproject.repository.UserRepo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepo commentRepo;
     private final UserRepo userRepo;
     private final NewsRepo newsRepo;
+//    private final TypeAdapterImpl typeAdapter;
 
-    public CommentService(CommentRepo commentRepo, UserRepo userRepo, NewsRepo newsRepo) {
-        this.commentRepo = commentRepo;
-        this.userRepo = userRepo;
-        this.newsRepo = newsRepo;
-    }
+    public Page<Comment> getComments(Long newsId, Pageable pageable) {
+        Page<Comment> comments = commentRepo.findAllByNews_Id(newsId, pageable);
 
-    public List<Comment> getComments(Long newsId) {
-        return commentRepo.findAll();
+//        return CommentNode.makeTree(comments.getContent(), typeAdapter);
+        return comments;
     }
 
     public Comment findCommentById(Long id){

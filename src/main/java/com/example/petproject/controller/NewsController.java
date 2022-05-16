@@ -2,12 +2,17 @@ package com.example.petproject.controller;
 
 import com.example.petproject.model.Comment;
 import com.example.petproject.model.news.News;
+import com.example.petproject.service.CommentService;
 import com.example.petproject.service.NewsService;
+import com.example.petproject.tree.TypeAdapterImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/news")
@@ -15,6 +20,9 @@ import java.util.Set;
 public class NewsController {
 
     private final NewsService newsService;
+    private final TypeAdapterImpl typeAdapter;
+    private final CommentService commentService;
+//    private final CommentRepo commentRepo;
 
     @GetMapping("/all")
     public List<News> getAllNews() {
@@ -47,9 +55,13 @@ public class NewsController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/comments/{newsId}")
-    public Set<Comment> getComments(@PathVariable Long newsId) {
-        News news = newsService.findNewsById(newsId);
-        Set<Comment> comments = news.getComments();
-        return comments;
+    public List<Comment> getComments(
+            @PathVariable Long newsId,
+            @RequestParam(value = "size", required = false, defaultValue = "0") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Comment> comments = commentService.getComments(newsId, pageable);
+        return comments.getContent();
     }
 }
