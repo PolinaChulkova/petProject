@@ -15,7 +15,12 @@ public class NewsService {
     }
 
     public void saveNews(News news) {
-        newsRepo.save(news);
+        try {
+            newsRepo.save(news);
+
+        } catch (RuntimeException re) {
+            System.out.println("Новость не сохранена!");
+        }
     }
 
     public List<News> getAllNews() {
@@ -25,19 +30,23 @@ public class NewsService {
     public News findNewsById(long id) {
         News news = newsRepo.findNewsById(id);
         if (news == null) {
-            return null;
+            throw new RuntimeException("Новость с id=" + id + " не найдена");
         }
         return news;
     }
 
     public News findByNewsName(String newsName) {
-        return newsRepo.findByNewsName(newsName);
+        News news = newsRepo.findByNewsName(newsName);
+        if (news==null){
+            throw new RuntimeException("Новость " + newsName + " не найдена");
+        }
+        return news;
     }
 
 
     public News createNews(News news) {
-        if (news.getId() != null && newsRepo.findNewsById(news.getId()) != null){
-            return null;
+        if (news.getId() != null && newsRepo.findNewsById(news.getId()) != null) {
+            throw new RuntimeException("Такая новость уже существует!");
         }
         newsRepo.save(news);
         return news;
@@ -55,6 +64,6 @@ public class NewsService {
     public News deleteNews(long id) {
         if (newsRepo.existsById(id)) {
             return newsRepo.deleteById(id);
-        } else return null;
+        } else throw new RuntimeException("Новость с id=" + id + " не существует!");
     }
 }

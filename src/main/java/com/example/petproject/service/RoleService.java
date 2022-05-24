@@ -19,15 +19,29 @@ public class RoleService{
     }
 
     public void saveRole(Role role) {
-        roleRepo.save(role);
+        try {
+
+            roleRepo.save(role);
+
+        } catch (RuntimeException ex) {
+            System.out.println("Роль " + role.getRoleName() + " не сохранена!");;
+        }
     }
 
     public Role findRoleByRoleName(String name) {
-        return roleRepo.findRoleByRoleName(name);
+        Role role =  roleRepo.findRoleByRoleName(name);
+        if (role==null) {
+            throw new RuntimeException("Роль " + name + " не найдена.");
+        }
+        return role;
     }
 
     public Role findRoleById(long id) {
-        return roleRepo.findRoleById(id);
+        Role role =  roleRepo.findRoleById(id);
+        if (role==null) {
+            throw new RuntimeException("Роль с id=" + id + " не найдена.");
+        }
+        return role;
     }
 
     public List<Role> findAll() {
@@ -36,7 +50,7 @@ public class RoleService{
 
     public Role createNewRole(Role role) {
         if (roleRepo.existsByRoleName(role.getRoleName())) {
-            return null;//exception
+            throw new RuntimeException("Роль " + role.getRoleName() + " уже существует!");
         }
         roleRepo.save(role);
         return role;
@@ -45,7 +59,7 @@ public class RoleService{
     public Role deleteRoleByRoleName(String name) {
         if (roleRepo.existsByRoleName(name)) {
             return roleRepo.deleteRoleByRoleName(name);
-        } else return null;//exception
+        } else throw new RuntimeException("Роль " + name + " не существует!");
     }
 
     public void removeRolesFromUser(User user) {

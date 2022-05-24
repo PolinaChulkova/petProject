@@ -1,11 +1,9 @@
 package com.example.petproject.controller;
 
 import com.example.petproject.DTO.FormForUserAndRole;
-import com.example.petproject.exceptions.ModelException;
 import com.example.petproject.model.User;
 import com.example.petproject.service.RoleService;
 import com.example.petproject.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping
-    public String createUser(@RequestBody FormForUserAndRole form) throws ModelException {
+    public String createUser(@RequestBody FormForUserAndRole form) {
         User user = userService.createNewUser(form.getUser(), form.getRoleName());
         return "User created";
     }

@@ -27,7 +27,7 @@ public class CommentService {
     public Comment findCommentById(Long id){
         Comment comment = commentRepo.findCommentById(id);
         if (comment == null) {
-            return null;
+            throw new RuntimeException("Коменнтарий с id=" + id + " не найден");
         }
         return comment;
     }
@@ -43,19 +43,27 @@ public class CommentService {
     }
 
     public void updateComment(Comment comment, Comment oldComment) {
-        oldComment.setText(comment.getText());
+        try {
+            oldComment.setText(comment.getText());
+
+        } catch (RuntimeException re) {
+            System.out.println("Комментарий " + comment.getId() + " не обновлен");
+        }
+
         commentRepo.save(oldComment);
     }
 
     public Comment deleteById(long id){
         if (commentRepo.existsById(id)) {
             return commentRepo.deleteById(id);
-        } else {
-            return null;//ошибку
-        }
+        } else throw new RuntimeException("Комментарий с id=" + id + " не существует!");
     }
 
     public Comment save(Comment comment) {
-        return commentRepo.save(comment);
+        Comment thisComment = commentRepo.save(comment);
+        if (thisComment==null) {
+            throw new RuntimeException(comment.getAuthor() + " ваш комментарий не сохранен");
+        }
+        return thisComment;
     }
 }
