@@ -2,6 +2,7 @@ package com.example.petproject.controller;
 
 import com.example.petproject.model.Role;
 import com.example.petproject.service.RoleService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,19 +19,20 @@ public class RoleController {
     }
 
     @GetMapping("/all")
-    public List<Role> getRoles() {
-        return roleService.findAll();
+    @ResponseBody
+    public ResponseEntity<List<Role>> getRoles() {
+        return ResponseEntity.ok().body(roleService.findAll());
     }
 
     @PostMapping
-    public String createRole(@RequestBody Role role) {
-        roleService.createNewRole(role);
-        return "Role created";
+    @ResponseBody
+    public ResponseEntity<Role> createRole(@RequestBody Role role) {
+        return ResponseEntity.ok().body(roleService.createNewRole(role));
     }
 
     @DeleteMapping("/{name}")
-    public String deleteRole(@PathVariable String name) {
-        roleService.deleteRoleByRoleName(name);
-        return "Role is deleted";
+    @ResponseBody
+    public ResponseEntity<Role> deleteRole(@PathVariable String name) {
+        return ResponseEntity.ok().body(roleService.deleteRoleByRoleName(name));
     }
 }
