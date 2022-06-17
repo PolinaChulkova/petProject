@@ -1,7 +1,7 @@
 package com.example.petproject.service;
 
 import com.example.petproject.model.Role;
-import com.example.petproject.DTO.FormForUserAndRole;
+import com.example.petproject.DTO.UserDataDTO;
 import com.example.petproject.model.User;
 import com.example.petproject.repository.RoleRepo;
 import com.example.petproject.repository.UserRepo;
@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public void updateUser(User user, FormForUserAndRole form) {
+    public void updateUser(User user, UserDataDTO form) {
         try {
 
             User newUser = form.getUser();

@@ -31,6 +31,9 @@ public class User {
     private int age;
     @Column(name = "city")
     private String city;
+
+    private String avatar;
+
 //    @Column(name = "password")
 //    private String password;
 

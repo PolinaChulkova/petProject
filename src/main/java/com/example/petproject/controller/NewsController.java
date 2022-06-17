@@ -20,9 +20,7 @@ import java.util.List;
 public class NewsController {
 
     private final NewsService newsService;
-    private final TypeAdapterImpl typeAdapter;
     private final CommentService commentService;
-//    private final CommentRepo commentRepo;
 
     @GetMapping("/all")
     public List<News> getAllNews() {
