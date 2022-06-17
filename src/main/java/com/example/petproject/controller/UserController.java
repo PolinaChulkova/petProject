@@ -4,6 +4,7 @@ import com.example.petproject.DTO.UserDataDTO;
 import com.example.petproject.model.User;
 import com.example.petproject.service.RoleService;
 import com.example.petproject.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,15 +12,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final RoleService roleService;
-
-    public UserController(UserService userService, RoleService roleService) {
-        this.userService = userService;
-        this.roleService = roleService;
-    }
 
     @GetMapping("/all")
     @ResponseBody

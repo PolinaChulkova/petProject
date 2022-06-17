@@ -2,6 +2,7 @@ package com.example.petproject.controller;
 
 import com.example.petproject.model.Role;
 import com.example.petproject.service.RoleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,13 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/role")
+@RequiredArgsConstructor
 public class RoleController {
 
     private final RoleService roleService;
-
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
-    }
 
     @GetMapping("/all")
     @ResponseBody

@@ -4,7 +4,6 @@ import com.example.petproject.model.Comment;
 import com.example.petproject.model.news.News;
 import com.example.petproject.service.CommentService;
 import com.example.petproject.service.NewsService;
-import com.example.petproject.tree.TypeAdapterImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
