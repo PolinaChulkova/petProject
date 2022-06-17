@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,43 +24,47 @@ public class NewsController {
     private final CommentService commentService;
 
     @GetMapping("/all")
-    public List<News> getAllNews() {
-       return newsService.getAllNews();
+    @ResponseBody
+    public ResponseEntity<List<News>> getAllNews() {
+       return ResponseEntity.ok().body(newsService.getAllNews());
     }
 
     @GetMapping("/{id}")
-    public News getNews(@PathVariable("id") long id) {
-        return newsService.findNewsById(id);
+    @ResponseBody
+    public ResponseEntity<News> getNews(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(newsService.findNewsById(id));
     }
 
     @PostMapping
-    public News createNews(@RequestBody News news) {
-        News createdNews = newsService.createNews(news);
-        return createdNews;
+    @ResponseBody
+    public ResponseEntity<News> createNews(@RequestBody News news) {
+        return ResponseEntity.ok().body(newsService.createNews(news));
     }
 
     @PutMapping("/{id}")
-    public String editNews(@PathVariable("id") long id,
-                           @RequestBody News news) {
-        News oldNews = newsService.findNewsById(id);
-        newsService.editNews(news, oldNews);
-        return "The news has been edited";
+    @ResponseBody
+    public ResponseEntity<News> editNews(@PathVariable("id") long id,
+                           @RequestBody News editedNews) {
+        News news = newsService.findNewsById(id);
+        newsService.editNews(editedNews, news);
+        return ResponseEntity.ok().body(news);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteNews(@PathVariable("id") Long id) {
-        newsService.deleteNews(id);
-        return "News deleted";
+    @ResponseBody
+    public ResponseEntity<News> deleteNews(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(newsService.deleteNews(id));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/comments/{newsId}")
-    public List<Comment> getComments(
+    @ResponseBody
+    public ResponseEntity<List<Comment>> getComments(
             @PathVariable Long newsId,
             @RequestParam(value = "size", required = false, defaultValue = "0") int size,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Comment> comments = commentService.getComments(newsId, pageable);
-        return comments.getContent();
+        return ResponseEntity.ok().body(comments.getContent());
     }
 }
