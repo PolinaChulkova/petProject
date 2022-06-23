@@ -2,6 +2,8 @@ package com.example.petproject.controller;
 
 import com.example.petproject.DTO.FileResponseDTO;
 import com.example.petproject.files.StorageService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,11 +18,14 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@RequestMapping("/file")
 @RequiredArgsConstructor
+@Api(description = "Контроллер для работы с файлами")
 public class FileController {
 
     private final StorageService storageService;
 
+    @ApiOperation("Контроллер для загрузки файла")
     @PostMapping("/upload")
     @ResponseBody
     public FileResponseDTO uploadFile(@RequestParam("file") MultipartFile file) {
@@ -36,6 +41,7 @@ public class FileController {
 
     @PostMapping("/upload-multiple-files")
     @ResponseBody
+    @ApiOperation("Контроллер для загрузки нескольких файлов")
     public List<FileResponseDTO> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
         return Arrays.stream(files)
                 .map(this::uploadFile)
@@ -44,6 +50,7 @@ public class FileController {
 
     @GetMapping("/download/{filename:.+}")
     @ResponseBody
+    @ApiOperation("Контроллер для скачивания файла")
     public ResponseEntity<Resource> downloadFile (@PathVariable String filename) throws Exception {
         Resource resource = storageService.loadAsResource(filename);
 

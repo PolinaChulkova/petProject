@@ -13,12 +13,4 @@ public class PetProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(PetProjectApplication.class, args);
     }
-
-//    @Bean
-//    public MultipartConfigElement multipartConfigElement() {
-//        MultipartConfigFactory factory = new MultipartConfigFactory();
-//        factory.setMaxFileSize(DataSize.parse("128KB"));
-//        factory.setMaxRequestSize(DataSize.parse("128KB"));
-//        return factory.createMultipartConfig();
-//    }
 }
