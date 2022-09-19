@@ -1,17 +1,17 @@
 package com.example.petproject.repository;
 
-import com.example.petproject.model.news.News;
+import com.example.petproject.model.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NewsRepo extends JpaRepository<News, Long> {
-    News findNewsById(long id);
-    News findByNewsName(String newsName);
+    Optional<News> findNewsById(long id);
+    Optional<News> findByNewsName(String newsName);
     boolean existsById(long id);
-    News deleteById(long id);
-    News save(News news);
+    Optional<News> deleteById(long id);
     List<News> findAll();
 }

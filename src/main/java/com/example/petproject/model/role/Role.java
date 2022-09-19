@@ -1,0 +1,41 @@
+package com.example.petproject.model.role;
+
+import com.example.petproject.model.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.Set;
+
+@Table(name = "roles")
+@Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "role_id")
+    private Long id;
+    @Column(name = "role_name")
+    @Enumerated(EnumType.STRING)
+    private ERole roleName;
+
+    @ManyToMany
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users;
+
+    public Role(ERole roleName) {
+        this.roleName = roleName;
+    }
+}

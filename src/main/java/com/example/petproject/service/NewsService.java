@@ -1,12 +1,14 @@
 package com.example.petproject.service;
 
-import com.example.petproject.model.news.News;
+import com.example.petproject.model.News;
 import com.example.petproject.repository.NewsRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class NewsService {
     private final NewsRepo newsRepo;
 
@@ -18,8 +20,8 @@ public class NewsService {
         try {
             newsRepo.save(news);
 
-        } catch (RuntimeException re) {
-            System.out.println("Новость не сохранена!");
+        } catch (RuntimeException e) {
+            log.error(e.getLocalizedMessage() + ": Новость не сохранена!");
         }
     }
 
@@ -27,43 +29,39 @@ public class NewsService {
         return newsRepo.findAll();
     }
 
-    public News findNewsById(long id) {
-        News news = newsRepo.findNewsById(id);
-        if (news == null) {
-            throw new RuntimeException("Новость с id=" + id + " не найдена");
-        }
+    public News findNewsById(Long id) {
+        News news = newsRepo.findNewsById(id)
+                .orElseThrow(() -> new RuntimeException("Новость с id=" + id + " не найдена"));
         return news;
     }
 
     public News findByNewsName(String newsName) {
-        News news = newsRepo.findByNewsName(newsName);
-        if (news==null){
-            throw new RuntimeException("Новость " + newsName + " не найдена");
-        }
+        News news = newsRepo.findByNewsName(newsName)
+                .orElseThrow(() -> new RuntimeException("Новость " + newsName + " не найдена"));
         return news;
     }
 
 
-    public News createNews(News news) {
-        if (news.getId() != null && newsRepo.findNewsById(news.getId()) != null) {
+    public void createNews(News news) {
+        if (news.getId() != null && newsRepo.findNewsById(news.getId()).isPresent()) {
             throw new RuntimeException("Такая новость уже существует!");
         }
         newsRepo.save(news);
-        return news;
     }
 
-    public void editNews(News news, News oldNews) {
-        oldNews.setNewsName(news.getNewsName());
-        oldNews.setDescription(news.getDescription());
-        oldNews.setStatus(news.getStatus());
-        oldNews.setText(news.getText());
-        oldNews.setPublicationDate(news.getPublicationDate());
-        newsRepo.save(oldNews);
+    public void editNews(Long id, News editedNews) {
+        News news = findNewsById(id);
+        news.setNewsName(editedNews.getNewsName());
+        news.setDescription(editedNews.getDescription());
+        news.setText(editedNews.getText());
+
+        saveNews(news);
     }
 
-    public News deleteNews(long id) {
-        if (newsRepo.existsById(id)) {
-            return newsRepo.deleteById(id);
-        } else throw new RuntimeException("Новость с id=" + id + " не существует!");
+    public void deleteNews(Long id) {
+        if (!newsRepo.existsById(id))
+            throw new RuntimeException("Новость с id=" + id + " не существует!");
+
+        newsRepo.deleteById(id);
     }
 }

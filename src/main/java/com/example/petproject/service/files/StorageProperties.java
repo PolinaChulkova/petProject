@@ -1,14 +1,12 @@
-package com.example.petproject.files;
+package com.example.petproject.service.files;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "storage")
-@Getter
-@Setter
+@Getter@Setter
 public class StorageProperties {
 
     private String location;
-
 }

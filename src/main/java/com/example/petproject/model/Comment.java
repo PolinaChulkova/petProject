@@ -1,7 +1,7 @@
 package com.example.petproject.model;
 
-import com.example.petproject.model.news.News;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +12,10 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-//@JsonIdentityInfo(
-//        generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -28,7 +27,7 @@ public class Comment {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "parentId")
+    @Column(name = "parent_id")
     private Long parentId;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -39,7 +38,11 @@ public class Comment {
     @JoinColumn(name = "news_id")
     private News news;
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "parentId")
-//    private List<Comment> childrenComment;
+    public Comment(Date date, String text, Long parentId, User author, News news) {
+        this.date = date;
+        this.text = text;
+        this.parentId = parentId;
+        this.author = author;
+        this.news = news;
+    }
 }

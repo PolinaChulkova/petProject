@@ -1,7 +1,8 @@
 package com.example.petproject.controller;
 
+import com.example.petproject.DTO.MessageResponse;
 import com.example.petproject.model.Comment;
-import com.example.petproject.model.news.News;
+import com.example.petproject.model.News;
 import com.example.petproject.service.CommentService;
 import com.example.petproject.service.NewsService;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,49 +29,50 @@ public class NewsController {
 
     @ApiOperation("Получение списка новостей")
     @GetMapping("/all")
-    @ResponseBody
     public ResponseEntity<List<News>> getAllNews() {
        return ResponseEntity.ok().body(newsService.getAllNews());
     }
 
     @ApiOperation("Получение новости по id")
     @GetMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<News> getNews(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(newsService.findNewsById(id));
     }
 
     @ApiOperation("Создание новости")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping
-    @ResponseBody
-    public ResponseEntity<News> createNews(@RequestBody News news) {
-        return ResponseEntity.ok().body(newsService.createNews(news));
+    public ResponseEntity<?> createNews(@RequestBody News news) {
+        newsService.createNews(news);
+        return ResponseEntity.ok().body(new MessageResponse("Создана публикация: " + news.getNewsName()));
     }
 
     @ApiOperation("Редактирование новости")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PutMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<News> editNews(@PathVariable("id") long id,
+    public ResponseEntity<?> editNews(@PathVariable("id") Long id,
                            @RequestBody News editedNews) {
-        News news = newsService.findNewsById(id);
-        newsService.editNews(editedNews, news);
-        return ResponseEntity.ok().body(news);
+        newsService.editNews(id, editedNews);
+        return ResponseEntity.ok().body(
+                new MessageResponse("Новость " + editedNews.getNewsName() + " отредактирована"));
     }
 
-    @ApiOperation("Удаление новости")
+    @ApiOperation("Удаление новости по её id")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<News> deleteNews(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(newsService.deleteNews(id));
+    public ResponseEntity<?> deleteNews(@PathVariable("id") Long id) {
+        newsService.deleteNews(id);
+        return ResponseEntity.ok().body(new MessageResponse("Новость с id=" + id + " удалена"));
     }
 
-    @ApiOperation("Получение списка комментарии к новости по её id")
+//    страница нумеруется с 0
+
+    @ApiOperation("Получение списка комментариев к новости по её id")
     @RequestMapping(method = RequestMethod.GET, value = "/comments/{newsId}")
-    @ResponseBody
     public ResponseEntity<List<Comment>> getComments(
             @PathVariable Long newsId,
-            @RequestParam(value = "size", required = false, defaultValue = "0") int size,
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Comment> comments = commentService.getComments(newsId, pageable);

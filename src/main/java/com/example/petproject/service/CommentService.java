@@ -1,69 +1,81 @@
 package com.example.petproject.service;
 
+import com.example.petproject.DTO.CommentDTO;
 import com.example.petproject.model.Comment;
+import com.example.petproject.model.User;
 import com.example.petproject.repository.CommentRepo;
-import com.example.petproject.repository.NewsRepo;
-import com.example.petproject.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
     private final CommentRepo commentRepo;
-    private final UserRepo userRepo;
-    private final NewsRepo newsRepo;
-//    private final TypeAdapterImpl typeAdapter;
+    private final UserService userService;
+    private final NewsService newsService;
 
     public Page<Comment> getComments(Long newsId, Pageable pageable) {
         Page<Comment> comments = commentRepo.findAllByNews_Id(newsId, pageable);
-
-//        return CommentNode.makeTree(comments.getContent(), typeAdapter);
         return comments;
     }
 
-    public Comment findCommentById(Long id){
-        Comment comment = commentRepo.findCommentById(id);
-        if (comment == null) {
-            throw new RuntimeException("Коменнтарий с id=" + id + " не найден");
-        }
+    public Comment findCommentById(Long id) {
+        Comment comment = commentRepo.findCommentById(id)
+                .orElseThrow(() -> new RuntimeException("Коменнтарий с id=" + id + " не найден"));
         return comment;
     }
 
-    public Comment createComment(Long authorId, Long newsId, Comment comment) {
-        if (comment.getId() != null && commentRepo.findCommentById(comment.getId()) != null){
-            return null;
-        }
-        comment.setAuthor(userRepo.findUserById(authorId));
-        comment.setNews(newsRepo.findNewsById(newsId));
-        commentRepo.save(comment);
-        return comment;
+    public void createComment(String authorName, Long newsId, CommentDTO commentDTO) {
+        User author = (User) userService.loadUserByUsername(authorName);
+        Comment newComment = new Comment(
+                new Date(),
+                commentDTO.getText(),
+                commentDTO.getParentId(),
+                author,
+                newsService.findNewsById(newsId));
+
+        save(newComment);
     }
 
-    public void updateComment(Comment comment, Comment oldComment) {
+    public void updateComment(String username, Long commentId, CommentDTO commentDTO) {
         try {
-            oldComment.setText(comment.getText());
+            if (!matchersUser(username, commentId))
+                throw new RuntimeException("Комментарий нельзя отредактировать");
+            Comment oldComment = findCommentById(commentId);
+            oldComment.setText(commentDTO.getText());
+            save(oldComment);
 
-        } catch (RuntimeException re) {
-            System.out.println("Комментарий " + comment.getId() + " не обновлен");
+        } catch (RuntimeException e) {
+            log.error("Комментарий " + commentId + " не обновлен");
         }
-
-        commentRepo.save(oldComment);
     }
 
-    public Comment deleteById(long id){
-        if (commentRepo.existsById(id)) {
-            return commentRepo.deleteById(id);
-        } else throw new RuntimeException("Комментарий с id=" + id + " не существует!");
+    public void deleteById(String username, Long commentId) {
+        if (!matchersUser(username, commentId))
+            throw new RuntimeException("Комментарий нельзя отредактировать");
+
+        commentRepo.deleteById(commentId);
     }
 
-    public Comment save(Comment comment) {
-        Comment thisComment = commentRepo.save(comment);
-        if (thisComment==null) {
-            throw new RuntimeException(comment.getAuthor() + " ваш комментарий не сохранен");
+    public boolean matchersUser(String username, Long commentId) {
+        User user = (User) userService.loadUserByUsername(username);
+        Comment comment = findCommentById(commentId);
+        return user.getComments().contains(comment);
+    }
+
+    public void save(Comment comment) {
+        try {
+            commentRepo.save(comment);
+
+        } catch (RuntimeException e) {
+            log.error(e.getLocalizedMessage()
+                    + " Комментарий " + comment.getAuthor().getUsername() + " не сохранён");
         }
-        return thisComment;
     }
 }

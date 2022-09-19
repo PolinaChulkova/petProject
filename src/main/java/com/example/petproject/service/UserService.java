@@ -1,40 +1,41 @@
 package com.example.petproject.service;
 
-import com.example.petproject.model.Role;
-import com.example.petproject.DTO.UserDataDTO;
+import com.example.petproject.DTO.UserUpdateRequest;
 import com.example.petproject.model.User;
-import com.example.petproject.repository.RoleRepo;
 import com.example.petproject.repository.UserRepo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class UserService implements UserDetailsService {
+
     private final UserRepo userRepo;
-    private final RoleRepo roleRepo;
-//    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public UserService(UserRepo userRepo, RoleRepo roleRepo) {
-        this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-    }
-
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Пользователь с именем: " + username + " не найден"));
+        return user;
     }
 
     public void saveUser(User user) {
         try {
             userRepo.save(user);
-
-        } catch (RuntimeException re) {
-            System.out.println("Пользователь не сохранён!");;
+        } catch (RuntimeException e) {
+            log.error(e.getLocalizedMessage() + " Пользователь " + user.getUsername() + " не сохранён");
         }
     }
 
@@ -43,66 +44,30 @@ public class UserService implements UserDetailsService {
     }
 
     public User findUserById(long id) {
-        User user = userRepo.findUserById(id);
-        if (user == null) {
-            throw new RuntimeException("Пользователь с id=" + id + " не найден");
-        }
+        User user = userRepo.findUserById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с id: " + id + "не найден"));
         return user;
     }
 
-    public User findByUsername(String username) {
-        User user =  userRepo.findByUsername(username);
-        if (user==null) {
-            throw new RuntimeException("Пользователь " + username + " не найден.");
-        }
-        return user;
-    }
+    public void updateUser(String username, UserUpdateRequest request) {
+        User user = userRepo.findByUsername(username).orElseThrow();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-    public void addRoleToUser(User user, String roleName) {
-        try {
-
-            Role role = roleRepo.findRoleByRoleName(roleName);
-            user.getRoles().add(role);
-
-        } catch (RuntimeException re) {
-            System.out.println("Роль " + roleName + " не присвоена пользователю " + user.getUsername());
-        }
         saveUser(user);
     }
 
-    public User createNewUser(User user, String roleName) {
-        if (user.getId() != null && userRepo.findUserById(user.getId()) != null) {
-            throw new RuntimeException("Такой пользователь уже существует!");
-//            throw new ModelException(ERROR_IS_EXIST.getErrorText());
-        }
-        addRoleToUser(user, roleName);
-        userRepo.save(user);
-        return user;
+    public void deleteUser(String username) {
+        if (userRepo.findByUsername(username).isPresent()) {
+            userRepo.deleteByUsername(username);
+        } else throw new RuntimeException("Пользователя с именем " + username + " не существует!");
     }
 
-    public void updateUser(User user, UserDataDTO form) {
-        try {
-
-            User newUser = form.getUser();
-            String roleName = form.getRoleName();
-
-            user.setUsername(newUser.getUsername());
-            user.setAge(newUser.getAge());
-            user.setEmail(newUser.getEmail());
-            user.setCity(newUser.getCity());
-
-            addRoleToUser(user, roleName);
-
-        } catch (RuntimeException re) {
-            System.out.println("Пользователь " + user.getId() + " не обновлен");
-        }
-
-        userRepo.save(user);
-    }
-
-    public User deleteUser(long id) {
-        if (userRepo.existsById(id)) {
-            return userRepo.deleteById(id);
-        } else throw new RuntimeException("Пользователя с id=" + id + " не существует!");
+    public void loadAvatar(String username, String uri) {
+        User user = userRepo.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("Пользователь с именем: " + username + " не найден"));
+        user.setAvatar(uri);
+        saveUser(user);
     }
 }

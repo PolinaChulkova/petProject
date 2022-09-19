@@ -1,15 +1,20 @@
 package com.example.petproject.controller;
 
-import com.example.petproject.DTO.UserDataDTO;
+import com.example.petproject.DTO.MessageResponse;
+import com.example.petproject.DTO.UserDataRequest;
+import com.example.petproject.DTO.UserUpdateRequest;
 import com.example.petproject.model.User;
-import com.example.petproject.service.RoleService;
 import com.example.petproject.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,46 +24,57 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final RoleService roleService;
 
     @ApiOperation("Получение списка всех пользователей")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    @ResponseBody
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
     @ApiOperation("Получение пользователя по его id")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<User> getUser(@PathVariable("id") long id) {
         User user = userService.findUserById(id);
         return ResponseEntity.ok().body(user);
     }
 
-    @ApiOperation("Создание пользователя")
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<User> createUser(@RequestBody UserDataDTO form) {
-        User user = userService.createNewUser(form.getUser(), form.getRoleName());
-        return ResponseEntity.ok().body(user);
+    @ApiOperation("Обновление текущего пользователя")
+    @PutMapping("/update")
+    @Transactional
+    public ResponseEntity<?> updateCurrentUser(@RequestBody UserUpdateRequest request, Principal principal) {
+        String username = principal.getName();
+        userService.updateUser(username, request);
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body(new MessageResponse("Пользователь " + username + " обновлён"));
+    }
+
+    @ApiOperation("Удаление текущего пользователя")
+    @DeleteMapping("/delete")
+    @Transactional
+    public ResponseEntity<?> deleteUser(Principal principal) {
+        String username = principal.getName();
+        userService.deleteUser(username);
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body(new MessageResponse("Пользователь " + username + " удалён"));
     }
 
     @ApiOperation("Обновление пользователя")
-    @PutMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<User> updateUser(@PathVariable("id") long id,
-                             @RequestBody UserDataDTO form) {
-        User user = userService.findUserById(id);
-        roleService.removeRolesFromUser(user);
-        userService.updateUser(user, form);
-        return ResponseEntity.ok().body(user);
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{username}")
+    public ResponseEntity<?> updateUser(@PathVariable("username") String username,
+                             @RequestBody UserUpdateRequest request) {
+        userService.updateUser(username, request);
+        return ResponseEntity.ok().body(new MessageResponse("Пользователь " + username + " обновлён"));
     }
 
-    @ApiOperation("Удвление пользователя")
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
-        return ResponseEntity.ok().body(userService.deleteUser(id));
+    @ApiOperation("Удаление пользователя")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable("username") String username) {
+        userService.deleteUser(username);
+        return ResponseEntity.ok().body(new MessageResponse("Пользователь " + username + " удалён"));
     }
+
 }

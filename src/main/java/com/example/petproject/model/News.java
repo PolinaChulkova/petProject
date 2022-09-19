@@ -1,23 +1,25 @@
-package com.example.petproject.model.news;
+package com.example.petproject.model;
 
-import com.example.petproject.model.Comment;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
+@Table(name = "news")
 @Entity
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-@Table(name = "news")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter@Setter
 public class News {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,15 +28,18 @@ public class News {
     @Column(name = "news_name")
     private String newsName;
     @Column(name = "publication_date")
-    private Date publicationDate;
+    private Date publicationDate = new Date();
     @Column(name = "description")
     private String description;
     @Column(name = "news_text")
     private String text;
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private NewsStatus status;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+    public News(String newsName, String description, String text) {
+        this.newsName = newsName;
+        this.description = description;
+        this.text = text;
+    }
 }

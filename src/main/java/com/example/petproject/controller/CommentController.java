@@ -1,5 +1,7 @@
 package com.example.petproject.controller;
 
+import com.example.petproject.DTO.CommentDTO;
+import com.example.petproject.DTO.MessageResponse;
 import com.example.petproject.model.Comment;
 import com.example.petproject.service.CommentService;
 import io.swagger.annotations.Api;
@@ -8,44 +10,47 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
-@Api(description ="Контроллер для работы с комментариями")
+@Api(description = "Контроллер для работы с комментариями")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @ApiOperation("Получение комментария")
-    @RequestMapping(method = RequestMethod.GET, value = "/{commentId}")
-    @ResponseBody
+    @ApiOperation("Получение комментарияпо его id")
+    @GetMapping("/{commentId}")
     public ResponseEntity<Comment> getComment(@PathVariable Long commentId) {
         return ResponseEntity.ok().body(commentService.findCommentById(commentId));
     }
 
     @ApiOperation("Создание комментария")
-    @RequestMapping(method = RequestMethod.POST, value = "/{authorId}/{newsId}")
-    @ResponseBody
-    public ResponseEntity<Comment> createComment(@PathVariable Long authorId,
-                                @PathVariable Long newsId,
-                                @RequestBody Comment comment) {
-        return ResponseEntity.ok().body(commentService.createComment(authorId, newsId, comment));
+    @PostMapping("/{newsId}")
+    public ResponseEntity<?> createComment(@PathVariable Long newsId,
+                                                 @RequestBody CommentDTO commentDTO,
+                                                 Principal principal) {
+        String username = principal.getName();
+        commentService.createComment(username, newsId, commentDTO);
+        return ResponseEntity.ok().body(new MessageResponse(username + ", вы создали комментарий"));
     }
 
-    @ApiOperation("Редактирование комментария")
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Comment> updateComment(@PathVariable Long id,
-                                @RequestBody Comment editedComment) {
-        Comment comment = commentService.findCommentById(id);
-        commentService.updateComment(editedComment, comment);
-        return ResponseEntity.ok().body(comment);
+    @ApiOperation("Редактирование комментария по его id")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable Long id,
+                                                 @RequestBody CommentDTO commentDTO,
+                                                 Principal principal) {
+        String username = principal.getName();
+        commentService.updateComment(username, id, commentDTO);
+        return ResponseEntity.ok().body(new MessageResponse(username + ", вы обновили комментарий"));
     }
 
     @ApiOperation("Удаление комментария")
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Comment> deleteComment(@PathVariable Long id) {
-        return ResponseEntity.ok().body(commentService.deleteById(id));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        commentService.deleteById(username, id);
+        return ResponseEntity.ok().body(new MessageResponse(username + ", ваш комментарий удалён"));
     }
 }

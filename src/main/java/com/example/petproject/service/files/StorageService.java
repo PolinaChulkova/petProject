@@ -1,5 +1,6 @@
-package com.example.petproject.files;
+package com.example.petproject.service.files;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class StorageService {
+
     private final Path rootLocation;
 
     public StorageService(StorageProperties properties) {
@@ -32,14 +35,14 @@ public class StorageService {
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (file.isEmpty()) {
-            throw new RuntimeException("Не удалось сохранить пустой файл" + filename);
+            throw new RuntimeException("Не удалось сохранить пустой файл " + filename);
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, this.rootLocation.resolve(filename),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException("Не удалось сохранить файл" + filename, e);
+            log.error(e.getLocalizedMessage() + " Не удалось сохранить файл " + filename);
         }
         return filename;
     }
@@ -47,7 +50,6 @@ public class StorageService {
     public Path load(String filename) {
         return rootLocation.resolve(filename);
     }
-//    зачем делать load метод если можно просто вызвать сразу resolve
 
     public Resource loadAsResource(String filename) throws Exception {
         try {
@@ -56,12 +58,11 @@ public class StorageService {
 
             if (resource.exists() || resource.isReadable()) {
                 return resource;
-
             } else {
-                throw new RuntimeException("Не удалось прочитать файл" + filename);
+                throw new RuntimeException("Не удалось прочитать файл " + filename);
             }
         } catch (MalformedURLException e) {
-           throw new Exception("Не удалось прочитать файл" + filename);
+            throw new MalformedURLException("Не удалось прочитать файл " + filename);
         }
     }
 }
