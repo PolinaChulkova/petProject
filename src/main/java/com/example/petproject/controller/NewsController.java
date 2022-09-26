@@ -68,7 +68,7 @@ public class NewsController {
 //    страница нумеруется с 0
 
     @ApiOperation("Получение списка комментариев к новости по её id")
-    @RequestMapping(method = RequestMethod.GET, value = "/comments/{newsId}")
+    @GetMapping("/comments/{newsId}")
     public ResponseEntity<List<Comment>> getComments(
             @PathVariable Long newsId,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size,

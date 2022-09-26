@@ -1,6 +1,7 @@
 package com.example.petproject.model.role;
 
 import com.example.petproject.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
@@ -13,9 +14,6 @@ import java.util.Set;
 
 @Table(name = "roles")
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -29,6 +27,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private ERole roleName;
 
+    @JsonBackReference
     @ManyToMany
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "role_id"),

@@ -1,7 +1,6 @@
 package com.example.petproject.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +13,10 @@ import java.util.List;
 
 @Table(name = "news")
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter@Setter
+@Getter
+@Setter
 public class News {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,6 +31,7 @@ public class News {
     @Column(name = "news_text")
     private String text;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 

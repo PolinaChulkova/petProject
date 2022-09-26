@@ -2,8 +2,10 @@ package com.example.petproject.model;
 
 import com.example.petproject.DTO.UserDataRequest;
 import com.example.petproject.model.role.Role;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,9 +23,10 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIgnoreProperties(value = {"isAccountNoneExpired", "isAccountNonLocked",
+        "isCredentialsNonExpired", "isEnabled", "authorities"},
+        allowGetters = true,
+        allowSetters = true)
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
@@ -40,9 +43,13 @@ public class User implements UserDetails {
     private String email;
     @Column(name = "avatar")
     private String avatar;
+
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 
+
+    @JsonManagedReference
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles",
@@ -50,6 +57,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "author")
     private Set<Comment> comments;
 
@@ -67,21 +75,25 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
