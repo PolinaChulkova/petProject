@@ -3,9 +3,9 @@ package com.example.petproject.service;
 import com.example.petproject.model.News;
 import com.example.petproject.repository.NewsRepo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -25,8 +25,12 @@ public class NewsService {
         }
     }
 
-    public List<News> getAllNews() {
-        return newsRepo.findAll();
+    public Page<News> getAllNews(Pageable pageable) {
+        return newsRepo.findAll(pageable);
+    }
+
+    public Page<News> searchByKey(String key, Pageable pageable) {
+        return newsRepo.searchByKey(key, pageable);
     }
 
     public News findNewsById(Long id) {

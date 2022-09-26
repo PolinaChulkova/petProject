@@ -5,6 +5,8 @@ import com.example.petproject.model.User;
 import com.example.petproject.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +33,10 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    public Page<User> searchUserByEmail(String email, Pageable pageable) {
+        return userRepo.findUserByEmail(email, pageable);
+    }
+
     public void saveUser(User user) {
         try {
             userRepo.save(user);
@@ -39,8 +45,8 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<User> getUsers() {
-        return userRepo.findAll();
+    public Page<User> getUsers(Pageable pageable) {
+        return userRepo.findAll(pageable);
     }
 
     public User findUserById(long id) {

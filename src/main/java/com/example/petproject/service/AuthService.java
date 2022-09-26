@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class AuthService {
 
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;

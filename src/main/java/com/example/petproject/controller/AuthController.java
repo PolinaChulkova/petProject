@@ -6,7 +6,7 @@ import com.example.petproject.DTO.MessageResponse;
 import com.example.petproject.DTO.UserDataRequest;
 import com.example.petproject.config.jwt.JwtProvider;
 import com.example.petproject.model.User;
-import com.example.petproject.service.RegistrationService;
+import com.example.petproject.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -17,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 @Api(description = "Контроллер для аутентификации")
@@ -30,7 +28,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-    private final RegistrationService registrationService;
+    private final AuthService registrationService;
 
     @PostMapping("login")
     public ResponseEntity<?> authUser(@RequestBody LoginRequest loginRequest) {

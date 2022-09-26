@@ -8,6 +8,10 @@ import com.example.petproject.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,8 +32,13 @@ public class UserController {
     @ApiOperation("Получение списка всех пользователей")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok().body(userService.getUsers());
+    public ResponseEntity<List<User>> getUsers(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<User> users = userService.getUsers(pageable);
+        return ResponseEntity.ok().body(users.getContent());
     }
 
     @ApiOperation("Получение пользователя по его id")
@@ -38,6 +47,18 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable("id") long id) {
         User user = userService.findUserById(id);
         return ResponseEntity.ok().body(user);
+    }
+
+    @ApiOperation("Поиск пользователя по email")
+    @GetMapping("/find")
+    public ResponseEntity<List<User>> searchUserByEmail(
+            @RequestParam("email") String email,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.searchUserByEmail(email, pageable);
+        return ResponseEntity.ok().body(users.getContent());
     }
 
     @ApiOperation("Обновление текущего пользователя")
