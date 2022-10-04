@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +26,9 @@ public class UserService implements UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username)
+        return userRepo.findByUsername(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Пользователь с именем: " + username + " не найден"));
-        return user;
     }
 
     public Page<User> searchUserByEmail(String email, Pageable pageable) {
@@ -41,7 +39,7 @@ public class UserService implements UserDetailsService {
         try {
             userRepo.save(user);
         } catch (RuntimeException e) {
-            log.error(e.getLocalizedMessage() + " Пользователь " + user.getUsername() + " не сохранён");
+            log.error("Пользователь " + user.getUsername() + " не сохранён. {}", e.getLocalizedMessage());
         }
     }
 

@@ -21,14 +21,12 @@ public class CommentService {
     private final NewsService newsService;
 
     public Page<Comment> getComments(Long newsId, Pageable pageable) {
-        Page<Comment> comments = commentRepo.findAllByNews_Id(newsId, pageable);
-        return comments;
+        return commentRepo.findAllByNews_Id(newsId, pageable);
     }
 
     public Comment findCommentById(Long id) {
-        Comment comment = commentRepo.findCommentById(id)
+        return commentRepo.findCommentById(id)
                 .orElseThrow(() -> new RuntimeException("Коменнтарий с id=" + id + " не найден"));
-        return comment;
     }
 
     public void createComment(String authorName, Long newsId, CommentDTO commentDTO) {
@@ -52,7 +50,7 @@ public class CommentService {
             save(oldComment);
 
         } catch (RuntimeException e) {
-            log.error("Комментарий " + commentId + " не обновлен");
+            log.error("Комментарий " + commentId + " не обновлен. Error: {}", e.getLocalizedMessage());
         }
     }
 
@@ -64,9 +62,8 @@ public class CommentService {
     }
 
     public boolean matchersUser(String username, Long commentId) {
-        User user = (User) userService.loadUserByUsername(username);
         Comment comment = findCommentById(commentId);
-        return user.getComments().contains(comment);
+        return username.equals(comment.getAuthor().getUsername());
     }
 
     public void save(Comment comment) {
@@ -74,8 +71,7 @@ public class CommentService {
             commentRepo.save(comment);
 
         } catch (RuntimeException e) {
-            log.error(e.getLocalizedMessage()
-                    + " Комментарий " + comment.getAuthor().getUsername() + " не сохранён");
+            log.error("Комментарий " + comment.getId() + " не сохранён. {}", e.getLocalizedMessage());
         }
     }
 }

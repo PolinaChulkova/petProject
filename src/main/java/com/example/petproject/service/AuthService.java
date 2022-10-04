@@ -25,8 +25,8 @@ public class AuthService {
         if (user.getId() != null && userRepo.findUserById(user.getId()).isPresent()) {
             throw new RuntimeException("Такой пользователь уже существует!");
         }
-        String encodePassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodePassword);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Set<Role> roles = registrationRequest.getRoles().stream()
                 .map(r -> roleRepo.findByRoleName(r)

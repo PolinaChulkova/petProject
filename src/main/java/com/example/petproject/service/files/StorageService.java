@@ -35,14 +35,14 @@ public class StorageService {
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (file.isEmpty()) {
-            throw new RuntimeException("Не удалось сохранить пустой файл " + filename);
+            throw new RuntimeException("Не удалось сохранить пустой файл {}" + filename);
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, this.rootLocation.resolve(filename),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage() + " Не удалось сохранить файл " + filename);
+            log.error("Не удалось сохранить файл " + filename + ". {}", e.getLocalizedMessage());
         }
         return filename;
     }

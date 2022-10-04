@@ -21,7 +21,7 @@ public class NewsService {
             newsRepo.save(news);
 
         } catch (RuntimeException e) {
-            log.error(e.getLocalizedMessage() + ": Новость не сохранена!");
+            log.error("Новость не сохранена! {}", e.getLocalizedMessage());
         }
     }
 
