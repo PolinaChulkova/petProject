@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Getter@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Entity
 @JsonIgnoreProperties(value = {"isAccountNoneExpired", "isAccountNonLocked",
@@ -47,7 +48,6 @@ public class User implements UserDetails {
     @JsonIgnore
     @Column(name = "password")
     private String password;
-
 
     @JsonManagedReference
     @ManyToMany(fetch = FetchType.EAGER,

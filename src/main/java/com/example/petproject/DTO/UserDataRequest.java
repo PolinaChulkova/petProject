@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Getter@Setter
+@Getter
 public class UserDataRequest {
 
     private String username;

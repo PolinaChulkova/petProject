@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepo.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Пользователь с именем: " + username + " не найден"));
+                        new UsernameNotFoundException("Пользователь с именем " + username + " не найден"));
     }
 
     public Page<User> searchUserByEmail(String email, Pageable pageable) {
@@ -54,7 +54,8 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateUser(String username, UserUpdateRequest request) {
-        User user = userRepo.findByUsername(username).orElseThrow();
+        User user = userRepo.findByUsername(username).orElseThrow(()
+                -> new UsernameNotFoundException("Пользователь с именем " + username + "не найден."));
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
