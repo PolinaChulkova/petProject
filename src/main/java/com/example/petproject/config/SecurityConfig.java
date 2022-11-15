@@ -28,11 +28,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        web.ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**")
-//                .mvcMatchers("/swagger-ui.html/**", "/configuration/**", "/swagger-resources/**", "/v2/api-docs");
-//    }
+   @Override
+   public void configure(WebSecurity web) throws Exception {
+       web.ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**")
+               .mvcMatchers("/swagger-ui.html/**", "/configuration/**", "/swagger-resources/**", "/v2/api-docs");
+   }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
