@@ -25,3 +25,6 @@
 - **model** - модели объектов User, Role, News и Comment;
 - **repository** - репозитории к моделям;
 - **service** - имплементация репозиториев.
+
+**Документация API**
+- http://localhost:8089/swagger-ui.html#/news-controller/searchByKeyUsingGET
