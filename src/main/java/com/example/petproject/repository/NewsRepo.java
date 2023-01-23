@@ -24,4 +24,4 @@ public interface NewsRepo extends JpaRepository<News, Long> {
     @Transactional
     @Query(value = "SELECT n FROM News n WHERE CONCAT(n.newsName, n.text, n.publicationDate) LIKE %||LOWER(TRIM(:key))||%")
     Page<News> searchByKey(@Param("key") String key, Pageable pageable);
-
+}
