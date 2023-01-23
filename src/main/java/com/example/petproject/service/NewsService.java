@@ -19,7 +19,6 @@ import javax.transaction.Transactional;
 public class NewsService {
     private final NewsRepo newsRepo;
 
-
     public Page<News> getAllNews(Pageable pageable) {
         return newsRepo.findAll(pageable);
     }
@@ -34,25 +33,28 @@ public class NewsService {
                         new EntityNotFoundException("Новость с id =" + id + " не найдена!"));
     }
 
-    public void createNews(News news) {
-        if (newsRepo.existsByNewsNameAndPublicationDate(news.getNewsName(), news.getPublicationDate())) {
+    public News createNews(News news) {
+        if (newsRepo.existsByNewsNameAndPublicationDate(news.getNewsName(), news.getPublicationDate()))
             throw new EntityExistsException("Новость " + news.getNewsName() + " уже существует!");
-        }
-        newsRepo.save(news);
+
+        return saveNews(new News(
+                news.getNewsName(),
+                news.getDescription(),
+                news.getText()));
     }
 
-    public void updateNews(Long id, News editedNews) {
+    public News updateNews(Long id, News editedNews) {
         News news = findNewsById(id);
         news.setNewsName(editedNews.getNewsName());
         news.setDescription(editedNews.getDescription());
         news.setText(editedNews.getText());
 
-        saveNews(news);
+        return saveNews(news);
     }
 
-    public void saveNews(News news) {
+    public News saveNews(News news) {
         try {
-            newsRepo.save(news);
+            return newsRepo.save(news);
 
         } catch (RuntimeException e) {
             log.error("Новость {} не сохранена! Error: [{}].", news.getNewsName(), e.getLocalizedMessage());
@@ -61,10 +63,9 @@ public class NewsService {
         }
     }
 
-    public void deleteNews(Long id) {
-        if (!newsRepo.existsById(id))
-            throw new EntityNotFoundException("Новость с id = " + id + " не найдена!");
-
-        newsRepo.deleteById(id);
+    public void deleteNews(Long newsId) {
+        if (!newsRepo.existsById(newsId))
+            throw new EntityNotFoundException("Новость с id = " + newsId + " не найдена!");
+        newsRepo.deleteById(newsId);
     }
 }

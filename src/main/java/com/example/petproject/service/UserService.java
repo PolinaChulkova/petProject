@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Page<User> searchUserByEmail(String email, Pageable pageable) {
-        return userRepo.findUserByEmail(email, pageable);
+        return userRepo.searchUserByEmail(email, pageable);
     }
 
     public User findUserById(long id) {
@@ -47,13 +47,14 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = " + id + "не найден!"));
     }
 
+
     public Page<User> getUsers(Pageable pageable) {
         return userRepo.findAll(pageable);
     }
 
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         try {
-            userRepo.save(user);
+            return userRepo.save(user);
 
         } catch (RuntimeException e) {
             log.error("Пользователь {} не сохранён! Error: [{}].", user.getUsername(), e);
@@ -62,13 +63,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void updateUser(UserUpdateRequest request) {
-        User user = findUserByUsername(request.getUsername());
+    public User updateUser(String username, UserUpdateRequest request) {
+        User user = findUserByUsername(username);
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        saveUser(user);
+        return saveUser(user);
     }
 
     public void deleteUser(String username) {

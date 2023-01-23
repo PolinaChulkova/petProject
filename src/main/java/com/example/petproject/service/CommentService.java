@@ -41,7 +41,6 @@ public class CommentService {
                 commentDTO.getParentId(),
                 author,
                 newsService.findNewsById(newsId));
-
         return save(newComment);
     }
 

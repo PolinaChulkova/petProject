@@ -33,10 +33,11 @@ public class AuthService {
 
         Set<Role> roles = registrationRequest.getRoles().stream()
                 .map(r -> roleRepo.findByRoleName(r)
-                        .orElseThrow(() -> new EntityNotFoundException("Роль " + r.name() + " не найдена!")))
+                        .orElseThrow(() ->
+                                new EntityNotFoundException("Роль " + r.name() + " не найдена!")))
                 .collect(Collectors.toSet());
-        user.setRoles(roles);
 
+        user.setRoles(roles);
         userRepo.save(user);
         return user;
     }

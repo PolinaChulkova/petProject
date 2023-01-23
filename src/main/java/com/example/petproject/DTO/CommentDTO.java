@@ -9,6 +9,4 @@ public class CommentDTO {
 
     private final String text;
     private final Long parentId;
-
-
 }

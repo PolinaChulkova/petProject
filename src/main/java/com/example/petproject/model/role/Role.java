@@ -1,8 +1,6 @@
 package com.example.petproject.model.role;
 
 import com.example.petproject.model.User;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +10,8 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter@Setter
+@Getter
+@Setter
 @EqualsAndHashCode
 public class Role {
     @Id

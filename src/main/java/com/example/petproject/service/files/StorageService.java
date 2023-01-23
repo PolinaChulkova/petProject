@@ -34,20 +34,19 @@ public class StorageService {
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
-        if (file.isEmpty()) {
+        if (file.isEmpty())
             throw new FileFormatException(String.format("Не удалось сохранить пустой файл {}!" + filename));
-        }
 
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, this.rootLocation.resolve(filename),
-                    StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, this.rootLocation.resolve(filename),
+                        StandardCopyOption.REPLACE_EXISTING);
 
-        } catch (IOException e) {
-            log.error("Не удалось сохранить файл {}! Error: [{}]", filename, e);
-            throw new FileStorageException(String.format("Не удалось сохранить файл %s! Error: [%s]", filename, e));
-        }
+            } catch (IOException e) {
+                log.error("Не удалось сохранить файл {}! Error: [{}]", filename, e);
+                throw new FileStorageException(String.format("Не удалось сохранить файл %s! Error: [%s]", filename, e));
+            }
 
-        return filename;
+            return filename;
     }
 
     public Resource loadAsResource(String filename) {
@@ -64,6 +63,4 @@ public class StorageService {
         }
     }
 }
-
-
 
