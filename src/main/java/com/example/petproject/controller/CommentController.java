@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+@Api("Контроллер для работы с комментариями")
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
-@Api(description = "Контроллер для работы с комментариями")
 public class CommentController {
 
     private final CommentService commentService;

@@ -22,6 +22,21 @@ public interface NewsRepo extends JpaRepository<News, Long> {
     Page<News> findAll(Pageable pageable);
 
     @Transactional
-    @Query(value = "SELECT n FROM News n WHERE CONCAT(n.newsName, n.text, n.publicationDate) LIKE %||LOWER(TRIM(:key))||%")
-    Page<News> searchByKey(@Param("key") String key, Pageable pageable);
+    @Query(value = "select n from News n where " +
+            "((:text is not null and lower(trim(n.newsName)) like ('%' || lower(trim(:text)) || '%')) or " +
+            "(:text is not null and lower(trim(n.description)) like ('%' || lower(trim(:text)) || '%')) or " +
+            "(:text is not null and lower(n.text) like ('%' || lower(trim(:text)) || '%')) or " +
+            "(:text is null and concat(n.newsName, n.description, n.text) like ('%'))) and " +
+            "((n.publicationDate between :fromDate and :toDate) or " +
+            "(cast(:fromDate as timestamp ) is null and n.publicationDate <= :toDate) or " +
+            "(cast(:toDate as timestamp )  is null and n.publicationDate >= :fromDate)) and " +
+            "((:toNumberComments is not null and size(n.comments) between :fromNumberComments and :toNumberComments) or " +
+            "(:toNumberComments is null and size(n.comments) >= :fromNumberComments))")
+    Page<News> searchByKey(@Param("text") String text,
+                           @Param("fromDate") LocalDateTime fromDate,
+                           @Param("toDate") LocalDateTime toDate,
+                           @Param("fromNumberComments") Integer fromNumberComments,
+                           @Param("toNumberComments") Integer toNumberComments,
+                           Pageable pageable);
+
 }

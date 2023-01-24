@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/file")
 @RequiredArgsConstructor
-@Api(description = "Контроллер для работы с файлами")
+@Api("Контроллер для работы с файлами")
 public class FileController {
 
     private final StorageService storageService;

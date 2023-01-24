@@ -2,10 +2,7 @@ package com.example.petproject.model;
 
 import com.example.petproject.DTO.UserDataRequest;
 import com.example.petproject.model.role.Role;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,23 +13,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
 @Entity
-@JsonIgnoreProperties(value = {"password", "isAccountNoneExpired", "isAccountNonLocked",
-        "isCredentialsNonExpired", "isEnabled", "authorities"},
-        allowGetters = true,
-        allowSetters = true)
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
+@JsonIgnoreProperties(value = {"password", "isAccountNoneExpired", "isAccountNonLocked",
+        "isCredentialsNonExpired", "isEnabled", "authorities"},
+        allowGetters = true,
+        allowSetters = true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@NoArgsConstructor
+@Getter
+@Setter
 public class User implements UserDetails {
 
     @Id
@@ -95,5 +92,23 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(avatar, user.avatar) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(roles, user.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, email, avatar, password, roles);
     }
 }

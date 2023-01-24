@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -42,5 +43,23 @@ public class Comment {
         this.parentId = parentId;
         this.author = author;
         this.news = news;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id) &&
+                Objects.equals(date, comment.date) &&
+                Objects.equals(text, comment.text) &&
+                Objects.equals(parentId, comment.parentId) &&
+                Objects.equals(author, comment.author) &&
+                Objects.equals(news, comment.news);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, text, parentId, author, news);
     }
 }

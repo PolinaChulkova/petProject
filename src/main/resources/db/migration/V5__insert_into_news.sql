@@ -1,12 +1,12 @@
-INSERT INTO NEWS (news_name, publication_date, description, news_text)
+INSERT INTO NEWS (news_id, news_name, publication_date, description, news_text)
 VALUES
-('First News', CURRENT_TIMESTAMP,
+(1, 'First News', CURRENT_TIMESTAMP,
 'This description',
  'Here are some examples of many-to-many relationships. ' ||
     'In a hiring platform database, a single contractor ' ||
     'can work for many companies, and each different company can ' ||
     'have many contractors working for them.'),
-('Second News', CURRENT_TIMESTAMP,
+(2, 'Second News', CURRENT_TIMESTAMP,
  'This description2',
  'A bcrypt encoder can be useful if you''re doing cross-browser testing. ' ||
  'For example, if you''re writing tests that involve hashed passwords,' ||

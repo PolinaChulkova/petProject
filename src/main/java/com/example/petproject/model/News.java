@@ -1,6 +1,7 @@
 package com.example.petproject.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,11 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
-
-@Table(name = "news")
 @Entity
+@Table(name = "news")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -31,7 +33,6 @@ public class News {
     @Column(name = "news_text")
     private String text;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
@@ -39,5 +40,22 @@ public class News {
         this.newsName = newsName;
         this.description = description;
         this.text = text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        News news = (News) o;
+        return Objects.equals(id, news.id) &&
+                Objects.equals(newsName, news.newsName) &&
+                Objects.equals(publicationDate, news.publicationDate) &&
+                Objects.equals(description, news.description) &&
+                Objects.equals(text, news.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, newsName, publicationDate, description, text);
     }
 }

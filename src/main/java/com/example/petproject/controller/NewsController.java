@@ -16,12 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/news")
 @RequiredArgsConstructor
-@Api(description = "Контроллер для работы с новостями")
+@Api("Контроллер для работы с новостями")
 public class NewsController {
 
     private final NewsService newsService;
@@ -30,24 +32,36 @@ public class NewsController {
     @ApiOperation("Получение списка новостей")
     @GetMapping("/all")
     public ResponseEntity<List<News>> getAllNews(
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "order", required = false, defaultValue = "DESC") String order,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "2") int size
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("publicationDate").ascending());
-        Page<News> news = newsService.getAllNews(pageable);
-       return ResponseEntity.ok().body(news.getContent());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort));
+        return ResponseEntity.ok().body(newsService.getAllNews(pageable).getContent());
     }
 
     @ApiOperation("Поиск новостей по ключевому слову")
     @GetMapping("/search")
     public ResponseEntity<List<News>> searchByKey(
-            @RequestParam(value = "key") String key,
+            @RequestParam(value = "text", required = false) String text,
+            @RequestParam(value = "fromDate", required = false, defaultValue = "1970-01-01 00:00:00") String fromDate,
+            @RequestParam(value = "toDate", required = false) String toDate,
+            @RequestParam(value = "fromNumberComments", required = false, defaultValue = "0") Integer fromNumberComments,
+            @RequestParam(value = "toNumberComments", required = false) Integer toNumberComments,
+            @RequestParam(value = "sort", required = false, defaultValue = "publicationDate") String sort,
+            @RequestParam(value = "order", required = false, defaultValue = "DESC") String order,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "2") int size
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size
     ) {
-        Pageable pageable = PageRequest.of(0, 2);
-        Page<News> news = newsService.searchByKey(key, pageable);
-        return ResponseEntity.ok().body(news.getContent());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (toDate == null)
+            toDate = LocalDateTime.now().format(formatter);
+        return ResponseEntity.ok().body(
+                newsService.searchByKey(text, LocalDateTime.parse(fromDate, formatter),
+                LocalDateTime.parse(toDate, formatter), fromNumberComments,
+                toNumberComments, pageable).getContent());
     }
 
     @ApiOperation("Получение новости по id")
@@ -68,7 +82,7 @@ public class NewsController {
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> editNews(@PathVariable("id") Long id,
-                           @RequestBody News editedNews) {
+                                      @RequestBody News editedNews) {
         newsService.updateNews(id, editedNews);
         return ResponseEntity.ok().body(
                 new MessageResponse("Новость " + editedNews.getNewsName() + " отредактирована"));

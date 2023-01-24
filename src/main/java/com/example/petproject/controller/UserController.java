@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@Api(description = "Контроллер для работы с пользователями")
+@Api("Контроллер для работы с пользователями")
 public class UserController {
 
     private final UserService userService;

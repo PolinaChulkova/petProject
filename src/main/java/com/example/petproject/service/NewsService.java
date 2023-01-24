@@ -11,20 +11,24 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class NewsService {
+
     private final NewsRepo newsRepo;
 
     public Page<News> getAllNews(Pageable pageable) {
         return newsRepo.findAll(pageable);
     }
 
-    public Page<News> searchByKey(String key, Pageable pageable) {
-        return newsRepo.searchByKey(key, pageable);
+    public Page<News> searchByKey(String text, LocalDateTime fromDate,  LocalDateTime toDate,
+                                  Integer fromNumberComments, Integer toNumberComments, Pageable pageable) {
+        return newsRepo.searchByKey(text, fromDate, toDate, fromNumberComments,
+                toNumberComments, pageable);
     }
 
     public News findNewsById(Long id) {

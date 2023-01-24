@@ -20,6 +20,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class CommentService {
+
     private final CommentRepo commentRepo;
     private final UserService userService;
     private final NewsService newsService;
