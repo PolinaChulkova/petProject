@@ -1,4 +1,4 @@
-package com.example.petproject.exception;
+package com.example.petproject.exception.custom_exception;
 
 public class FileStorageException extends RuntimeException {
 

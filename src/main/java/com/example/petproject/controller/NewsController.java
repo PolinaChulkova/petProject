@@ -1,6 +1,5 @@
 package com.example.petproject.controller;
 
-import com.example.petproject.DTO.MessageResponse;
 import com.example.petproject.model.Comment;
 import com.example.petproject.model.News;
 import com.example.petproject.service.CommentService;
@@ -74,8 +73,7 @@ public class NewsController {
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createNews(@RequestBody News news) {
-        newsService.createNews(news);
-        return ResponseEntity.ok().body(new MessageResponse("Создана публикация: " + news.getNewsName()));
+        return ResponseEntity.ok().body(newsService.createNews(news));
     }
 
     @ApiOperation("Редактирование новости")
@@ -83,9 +81,7 @@ public class NewsController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editNews(@PathVariable("id") Long id,
                                       @RequestBody News editedNews) {
-        newsService.updateNews(id, editedNews);
-        return ResponseEntity.ok().body(
-                new MessageResponse("Новость " + editedNews.getNewsName() + " отредактирована"));
+        return ResponseEntity.ok().body(newsService.updateNews(id, editedNews));
     }
 
     @ApiOperation("Удаление новости по её id")
@@ -93,7 +89,7 @@ public class NewsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNews(@PathVariable("id") Long id) {
         newsService.deleteNews(id);
-        return ResponseEntity.ok().body(new MessageResponse("Новость с id=" + id + " удалена"));
+        return ResponseEntity.ok().body("Новость с id=" + id + " удалена");
     }
 
 //    страница нумеруется с 0

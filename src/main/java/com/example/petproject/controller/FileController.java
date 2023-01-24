@@ -1,7 +1,6 @@
 package com.example.petproject.controller;
 
 import com.example.petproject.DTO.FileResponseDTO;
-import com.example.petproject.DTO.MessageResponse;
 import com.example.petproject.service.UserService;
 import com.example.petproject.service.files.StorageService;
 import io.swagger.annotations.Api;
@@ -71,7 +70,7 @@ public class FileController {
     @ApiOperation("Контроллер для скачивания файла")
     @GetMapping("/download/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<?> downloadFile (@PathVariable String filename) throws Exception {
+    public ResponseEntity<?> downloadFile(@PathVariable String filename) throws Exception {
         Resource resource = storageService.loadAsResource(filename);
 
         return ResponseEntity.ok()

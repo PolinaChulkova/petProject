@@ -28,7 +28,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private ERole roleName;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

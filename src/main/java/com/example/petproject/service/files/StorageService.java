@@ -1,7 +1,7 @@
 package com.example.petproject.service.files;
 
-import com.example.petproject.exception.FileFormatException;
-import com.example.petproject.exception.FileStorageException;
+import com.example.petproject.exception.custom_exception.FileFormatException;
+import com.example.petproject.exception.custom_exception.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

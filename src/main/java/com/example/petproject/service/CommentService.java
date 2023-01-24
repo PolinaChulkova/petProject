@@ -1,7 +1,7 @@
 package com.example.petproject.service;
 
 import com.example.petproject.DTO.CommentDTO;
-import com.example.petproject.exception.CommentException;
+import com.example.petproject.exception.custom_exception.CommentException;
 import com.example.petproject.model.Comment;
 import com.example.petproject.model.User;
 import com.example.petproject.repository.CommentRepo;
