@@ -21,6 +21,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     Page<User> findAll(Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.email LIKE %?1%")
-    Page<User> searchUserByEmail(String email, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE concat(u.username, u.email)  LIKE %?1%")
+    Page<User> searchUserByText(String text, Pageable pageable);
 }

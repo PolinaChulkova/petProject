@@ -38,8 +38,8 @@ public class UserService implements UserDetailsService {
                         new EntityNotFoundException("Пользователь с именем " + username + " не найден!"));
     }
 
-    public Page<User> searchUserByEmail(String email, Pageable pageable) {
-        return userRepo.searchUserByEmail(email, pageable);
+    public Page<User> searchUserByText(String text, Pageable pageable) {
+        return userRepo.searchUserByText(text, pageable);
     }
 
     public User findUserById(long id) {
