@@ -30,7 +30,7 @@ public class FileController {
     private final StorageService storageService;
     private final UserService userService;
 
-    @ApiOperation("Контроллер для загрузки аватара")
+    @ApiOperation("Контроллер для загрузки аватара текущим пользователем")
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("avatar") MultipartFile file,
                                           Principal principal) {
@@ -41,7 +41,7 @@ public class FileController {
                 .toUriString();
         String username = principal.getName();
         userService.loadAvatar(username, uri);
-        return ResponseEntity.ok().body(new MessageResponse(username + ", вы загрузили аватар"));
+        return ResponseEntity.ok().body(username + ", аватар загружен.");
     }
 
     @ApiOperation("Контроллер для загрузки файла")
