@@ -35,19 +35,19 @@ public class CommentController {
     }
 
     @ApiOperation("Редактирование комментария текущего пользователя по его id")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateComment(@PathVariable Long id,
+    @PutMapping("/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
                                            @RequestBody CommentDTO commentDTO,
                                            Principal principal) {
         String username = principal.getName();
-        return ResponseEntity.ok().body(commentService.updateComment(username, id, commentDTO));
+        return ResponseEntity.ok().body(commentService.updateComment(username, commentId, commentDTO));
     }
 
     @ApiOperation("Удаление комментария текущего пользователя по id")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long id, Principal principal) {
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, Principal principal) {
         String username = principal.getName();
-        commentService.deleteById(username, id);
+        commentService.deleteById(username, commentId);
         return ResponseEntity.ok().body("Комментарий пользователя " + username + " удалён.");
     }
 }

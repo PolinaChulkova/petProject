@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
@@ -62,7 +63,7 @@ public class NewsService {
 
         } catch (RuntimeException e) {
             log.error("Новость {} не сохранена! Error: [{}].", news.getNewsName(), e.getLocalizedMessage());
-            throw new RuntimeException(String.format("Новость %s не сохранена! Error: [%s].",
+            throw new PersistenceException(String.format("Новость %s не сохранена! Error: [%s].",
                     news.getNewsName(), e));
         }
     }
